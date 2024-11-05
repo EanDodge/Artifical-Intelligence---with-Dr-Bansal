@@ -6,15 +6,15 @@ def hidden_markov_model(size_of_graph, size_of_emissions):
     # Transition matrix
     transitions = np.random.rand(size_of_graph, size_of_graph)
     transitions /= transitions.sum(axis=1, keepdims=True)
-    print("trans", transitions)
+    print("Transition Matrix \n", transitions)
     # Emission matrix
     emissions = np.random.rand(size_of_graph, size_of_emissions)
     emissions /= emissions.sum(axis=1, keepdims=True)
-    print("emit", emissions)
+    print("Emission Matrix \n", emissions)
     # Initial vector
     init_vec = np.random.rand(size_of_graph)
     init_vec /= init_vec.sum()
-    print("init", init_vec)
+    print("Initial vector \n", init_vec)
 
     return transitions, emissions, init_vec
 
@@ -52,6 +52,7 @@ def all_paths(size_of_graph, size_of_emissions, transitions, emissions, init_vec
     return newcartesian
 
 def best_path(newcartesian, transitions, emissions, init_vec, emits):
+    print("All possible paths:")
     print(newcartesian)
     min_value = list()
     for path in newcartesian:
@@ -78,13 +79,17 @@ def best_path(newcartesian, transitions, emissions, init_vec, emits):
 
 # Main function
 def main():
-    emits = list("3232")
+    state_size = int(input("Enter the amount of states"))
+    print("Enter a string of numbers 0-state_size in a sequence of your choosing")
+    emits = input("For Example - states = 4. input could be 0123 \n")
+    #emits = list("3232")
     #print(emits[2])
     emit_size = len(emits)
-    state_size = 3
+    #state_size = 3
     transitions, emissions, init_vec = hidden_markov_model(state_size,emit_size )
     newcartesian = all_paths(state_size, emit_size, transitions, emissions, init_vec)
     min_car = best_path(newcartesian,transitions, emissions, init_vec, emits )
+    print("The best path is :")
     print(min_car)
 
 
