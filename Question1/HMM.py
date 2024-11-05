@@ -78,7 +78,7 @@ def best_path(newcartesian, transitions, emissions, init_vec, emits):
 
 # Main function
 def main():
-    emits = list("0123")
+    emits = list("3232")
     #print(emits[2])
     emit_size = len(emits)
     state_size = 3
