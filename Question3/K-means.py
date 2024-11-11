@@ -2,13 +2,24 @@ import random
 import math
 import matplotlib.pyplot as plt
 DATA_SIZE = 250
-def get_data():
+def get_data_random():
     result = list()
     for i in range(DATA_SIZE):
         rand1 = random.randint(0,100)
         rand2 = random.randint(0,100)
         result.append((rand1,rand2))
     return result
+
+def get_data_file():
+    try:
+        with open('data-1.txt', 'r') as file:
+            result = [line.strip() for line in file]
+        print(result)
+        return result
+    except FileNotFoundError:
+        print("File not found. Please check the file path.")
+        return []
+
 
 def distance_of_points(one, two):
     return (math.sqrt((one[0] - two[0])**2 + (one[1] - two[1])**2))
@@ -153,7 +164,8 @@ def plot(data, centriods, my_radius,clusters):
 
 
 def main():
-    data = get_data()
+    #data = get_data_random()
+    data = get_data_file
     number_of_centriods = input("How many centriods would u like?")
     max_iterations = input("Max interarions of the algorithm?")
     max_shift = input("At what shift are the clusters stable?")
