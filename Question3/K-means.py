@@ -1,7 +1,7 @@
 import random
 import math
 import matplotlib.pyplot as plt
-DATA_SIZE = 250
+DATA_SIZE = 200
 def get_data_random():
     result = list()
     for i in range(DATA_SIZE):
@@ -11,14 +11,16 @@ def get_data_random():
     return result
 
 def get_data_file():
-    try:
+        result = []
         with open('data-1.txt', 'r') as file:
-            result = [line.strip() for line in file]
-        print(result)
+            for line in file:
+                line = line.strip()
+                if line: 
+                    x, y = map(float, line.strip("()").split(","))
+                    result.append((x, y))
+            for i in result:
+                print(i)
         return result
-    except FileNotFoundError:
-        print("File not found. Please check the file path.")
-        return []
 
 
 def distance_of_points(one, two):
@@ -42,7 +44,7 @@ def generate_seed(data, number_of_centriods):
     size_x = (max_x - min_x)/number_of_centriods
     size_y = (max_y - min_y)/number_of_centriods
     macro_num = number_of_centriods ** 2
-    avr_density = DATA_SIZE / macro_num
+    avr_density = len(data) / macro_num
     high_density = list()
     for i in range(number_of_centriods):
         low_x = min_x + (i*size_x)
@@ -64,7 +66,7 @@ def generate_seed(data, number_of_centriods):
         next_seed = high_density[indicies[i]]
         final_seeds.append(next_seed)
         #high_density.remove(high_density[indicies[i]])
-    radius = ((min(size_x,size_y)) / number_of_centriods)+(DATA_SIZE / 100)
+    radius = ((min(size_x,size_y)) / number_of_centriods)+(len(data) / 100)
     for i in range(number_of_centriods):
         ith_seed = final_seeds[i]
         for j in range(number_of_centriods):
@@ -165,7 +167,7 @@ def plot(data, centriods, my_radius,clusters):
 
 def main():
     #data = get_data_random()
-    data = get_data_file
+    data = get_data_file()
     number_of_centriods = input("How many centriods would u like?")
     max_iterations = input("Max interarions of the algorithm?")
     max_shift = input("At what shift are the clusters stable?")
