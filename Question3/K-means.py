@@ -1,6 +1,7 @@
 import random
 import math
-DATA_SIZE = 200
+import matplotlib.pyplot as plt
+DATA_SIZE = 250
 def get_data():
     result = list()
     for i in range(DATA_SIZE):
@@ -9,7 +10,7 @@ def get_data():
         result.append((rand1,rand2))
     return result
 
-def distance(one, two):
+def distance_of_points(one, two):
     return (math.sqrt((one[0] - two[0])**2 + (one[1] - two[1])**2))
 
 
@@ -45,9 +46,6 @@ def generate_seed(data, number_of_centriods):
             if (num_of_points > avr_density-(avr_density/6)):
                 high_density.append((mid_x , mid_y))
     final_seeds = list()
-#     next_seed = randomly_select(Shigher); % randomly select one of the seed points
-# Sseed = Sseed + next_seed; % put the seed point in the set of selected seeds Sseed
-# Shigher = Shigher – next_seed;} % remove the selected seed from the set Shighe
     print(high_density)
     indicies = random.sample(range(0, len(high_density)-1), number_of_centriods)
 
@@ -55,44 +53,115 @@ def generate_seed(data, number_of_centriods):
         next_seed = high_density[indicies[i]]
         final_seeds.append(next_seed)
         #high_density.remove(high_density[indicies[i]])
-    radius = (min(size_x,size_y)) / number_of_centriods
+    radius = ((min(size_x,size_y)) / number_of_centriods)+(DATA_SIZE / 100)
     for i in range(number_of_centriods):
         ith_seed = final_seeds[i]
         for j in range(number_of_centriods):
             if ( i != j):
                 jth_seed = final_seeds[j]
-                distance = distance(ith_seed,jth_seed)
-                if (distance < 2*radius): radius = distance / 2
+                distance = distance_of_points(ith_seed,jth_seed)
+                if (distance < 2*radius): 
+                    radius = distance / 2
+                    print("in here")
     return (final_seeds, radius)
 
 def kmeans(data, number_of_centriods, max_iterations, max_shift):
     seed_points, radius = generate_seed(data, number_of_centriods)
-    clusters = list(list())
     count = 1
     stable = False
     while((count < max_iterations) and not(stable)):
-        outliers = data
+        outliers = list(data)
+        clusters = [[] for i in range(number_of_centriods)]
         for i in range(number_of_centriods):
-            for j in range(DATA_SIZE):
-                distance = distance(seed_points[i],data[j])
-                if(distance < radius):
-                    clusters[i].append(data[j])
-                    outliers.remove(data[j])
-            new_cluster_x = 0
-            new_cluster_y = 0
             for point in data:
-                new_cluster_x += point[0]
-                new_cluster_y += point[1]
-            new_cluster_x /= len(clusters[i])
-            new_cluster_y /= len(clusters[i])
+                distance = distance_of_points(seed_points[i],point)
+                if(distance < radius):
+                    clusters[i].append(point)
+                    outliers.remove(point)
+            new_centriod_x = 0
+            new_centriod_y = 0
+            for point1 in clusters[i]:
+                new_centriod_x += point1[0]
+                new_centriod_y += point1[1]
+            if (len(clusters[i])>0):
+                new_centriod_x /= len(clusters[i])
+                new_centriod_y /= len(clusters[i])
+                new_centriod = (new_centriod_x,new_centriod_y)
+                seed_points[i] = new_centriod
+                print ("cluster #", i, "new centroid:", (new_centriod_x, new_centriod_y))
+            else:
+                new_centriod = seed_points[i]
+                new_centriod_x = new_centriod[0]
+                new_centriod_y = new_centriod[1]
+                print ("cluster #", i, "new centroid:", (new_centriod_x, new_centriod_y))
+        #print("Current outliers", outliers); 
+        stable = True
+        #print(len(seed_points), len(new_clusters), number_of_centriods)
+        for i in range(number_of_centriods - 1):
+            shift = distance_of_points(seed_points[i], new_centriod)
+            if ( shift > max_shift): stable = False
+        count = count + 1
+    print("Final Centroids")
+    for seed in seed_points:
+        print(seed)
+    print("Final Clusters")
+    cluster_count=1
+    for clust in clusters:
+        print("#",cluster_count )
+        for i in clust:
+            print(i)
+        cluster_count+=1
+    print("Final Outliers")
+    for outlier in outliers:
+        print(outlier)
+    return clusters, seed_points, radius
+
+def test_final(clusters, centriods, radius):
+    count = 0
+    #print(radius)
+    for cluster in clusters:
+        for point in cluster:
+            distance = distance_of_points(point, centriods[count])
+            #print("cluster#", count, " point ", point, "distance, ", distance)
+            if(distance > radius):
+                #print("in here")
+                cluster.remove(point)
+        count +=1
+
+def plot(data, centriods, my_radius,clusters):
+    x,y = zip(*data)
+    fig, ax = plt.subplots()
+    ax.scatter(x,y,color='blue',label = 'data')
+
+    for cluster in clusters:
+        if(len(cluster)>1):
+            x,y = zip(*cluster)
+            ax.scatter(x,y,color='red',label = 'data')
+        else:
+            print("cluster did not have any items")
+
+    count = 1
+    for point in centriods:
+        circle1 = plt.Circle(point, radius=my_radius, color='red', fill=False)
+        ax.add_artist(circle1)
+        ax.text(point[0],point[1]+10,str(count),fontsize=20, ha='center', va='center', color='red')
+        count += 1
+    plt.show()
+
 
 
 
 
 def main():
     data = get_data()
-    generate_seed(data, 3)
-    print(data)
+    number_of_centriods = input("How many centriods would u like?")
+    max_iterations = input("Max interarions of the algorithm?")
+    max_shift = input("At what shift are the clusters stable?")
+    #generate_seed(data, 3)
+    clusters, centriods,radius = kmeans(data,int(number_of_centriods),int(max_iterations),int(max_shift))
+    test_final(clusters, centriods, radius)
+    #print(data)
+    plot(data, centriods, radius, clusters)
 
 
 if __name__ == "__main__":
