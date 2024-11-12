@@ -18,8 +18,8 @@ def get_data_file():
                 if line: 
                     x, y = map(float, line.strip("()").split(","))
                     result.append((x, y))
-            for i in result:
-                print(i)
+            # for i in result:
+            #     print(i)
         return result
 
 
@@ -66,14 +66,14 @@ def generate_seed(data, number_of_centriods):
         next_seed = high_density[indicies[i]]
         final_seeds.append(next_seed)
         #high_density.remove(high_density[indicies[i]])
-    radius = ((min(size_x,size_y)) / number_of_centriods)+(len(data) / 100)
+    radius = ((min(size_x,size_y)) / number_of_centriods)+(len(data) / 15)
     for i in range(number_of_centriods):
         ith_seed = final_seeds[i]
         for j in range(number_of_centriods):
             if ( i != j):
                 jth_seed = final_seeds[j]
                 distance = distance_of_points(ith_seed,jth_seed)
-                if (distance < 2*radius): 
+                if (distance < 5*radius): 
                     radius = distance / 2
                     print("in here")
     return (final_seeds, radius)
