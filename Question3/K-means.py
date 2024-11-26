@@ -55,34 +55,37 @@ def generate_seed(data, number_of_centriods):
             high_y = low_y + size_y
             mid_y = (low_y + high_y)/2
             num_of_points = points_in_marcoblocks(data, low_x, low_y, high_x, high_y)
-            print(num_of_points, avr_density)
-            if (num_of_points > avr_density-(avr_density/6)):
+            # print(num_of_points, avr_density)
+            if (num_of_points > avr_density):
                 high_density.append((mid_x , mid_y))
     final_seeds = list()
-    print(high_density)
+    # print(high_density)
     indicies = random.sample(range(0, len(high_density)-1), number_of_centriods)
+    #random high density macro blocks
 
     for i in range(number_of_centriods):
         next_seed = high_density[indicies[i]]
         final_seeds.append(next_seed)
         #high_density.remove(high_density[indicies[i]])
-    radius = ((min(size_x,size_y)) / number_of_centriods)+(len(data) / 15)
+    radius = ((min(size_x,size_y)) / number_of_centriods)+(len(data) / 20)
     for i in range(number_of_centriods):
         ith_seed = final_seeds[i]
         for j in range(number_of_centriods):
             if ( i != j):
                 jth_seed = final_seeds[j]
                 distance = distance_of_points(ith_seed,jth_seed)
-                if (distance < 5*radius): 
+                if (distance < 2*radius): 
                     radius = distance / 2
-                    print("in here")
+                # print("RADIUS: ", radius)
     return (final_seeds, radius)
 
 def kmeans(data, number_of_centriods, max_iterations, max_shift):
     seed_points, radius = generate_seed(data, number_of_centriods)
     count = 1
     stable = False
+    
     while((count < max_iterations) and not(stable)):
+        new_centriods = list()
         outliers = list(data)
         clusters = [[] for i in range(number_of_centriods)]
         for i in range(number_of_centriods):
@@ -90,7 +93,8 @@ def kmeans(data, number_of_centriods, max_iterations, max_shift):
                 distance = distance_of_points(seed_points[i],point)
                 if(distance < radius):
                     clusters[i].append(point)
-                    outliers.remove(point)
+                    if point in outliers:
+                        outliers.remove(point)
             new_centriod_x = 0
             new_centriod_y = 0
             for point1 in clusters[i]:
@@ -99,20 +103,23 @@ def kmeans(data, number_of_centriods, max_iterations, max_shift):
             if (len(clusters[i])>0):
                 new_centriod_x /= len(clusters[i])
                 new_centriod_y /= len(clusters[i])
-                new_centriod = (new_centriod_x,new_centriod_y)
-                seed_points[i] = new_centriod
+                new_centriods.append((new_centriod_x,new_centriod_y))
+                # seed_points[i] = new_centriod
                 print ("cluster #", i, "new centroid:", (new_centriod_x, new_centriod_y))
             else:
-                new_centriod = seed_points[i]
-                new_centriod_x = new_centriod[0]
-                new_centriod_y = new_centriod[1]
+                #new_centriods[i] = seed_points[i]
+                new_centriod_x = seed_points[i][0]
+                new_centriod_y = seed_points[i][1]
+                new_centriods.append((new_centriod_x,new_centriod_y))
                 print ("cluster #", i, "new centroid:", (new_centriod_x, new_centriod_y))
         #print("Current outliers", outliers); 
         stable = True
-        #print(len(seed_points), len(new_clusters), number_of_centriods)
-        for i in range(number_of_centriods - 1):
-            shift = distance_of_points(seed_points[i], new_centriod)
-            if ( shift > max_shift): stable = False
+        #print(len(seed_points), len(new_centriods), number_of_centriods)
+        for i in range(number_of_centriods):
+            shift = distance_of_points(seed_points[i], new_centriods[i])
+            if ( shift > max_shift): 
+                stable = False
+        seed_points = new_centriods
         count = count + 1
     print("Final Centroids")
     for seed in seed_points:
@@ -175,6 +182,7 @@ def main():
     clusters, centriods,radius = kmeans(data,int(number_of_centriods),int(max_iterations),int(max_shift))
     test_final(clusters, centriods, radius)
     #print(data)
+    #print(len(centriods))
     plot(data, centriods, radius, clusters)
 
 
