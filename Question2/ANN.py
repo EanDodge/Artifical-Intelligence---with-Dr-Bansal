@@ -35,6 +35,9 @@ def make_random_matrix(size_of_input, nhidden,phidden, size_of_output):
         trained_matracies.append( np.random.uniform(-1,1,size=(phidden, phidden)))
         index = index+1
     trained_matracies.append( np.random.uniform(-1,1,size = (size_of_output, phidden)))
+    for matrix in trained_matracies:
+        print(matrix)
+        print()
     return trained_matracies
 
 
@@ -61,7 +64,9 @@ def feed_forward_neural_network(size_of_input, size_of_output, training_input,tr
     #for i in trained_matracies:
         #print (i)
         #print()
-
+    print("Data Set: ", data_index)
+    print("INPUT: ", training_input)
+    print("TARGET OUTPUT: ",training_output)
     input_vector = list()
     input_vector = calculate_input_vector(training_input, trained_matracies[0],bias)
     #print(input_vector)
@@ -78,7 +83,7 @@ def feed_forward_neural_network(size_of_input, size_of_output, training_input,tr
     input_vector = calculate_input_vector(output_vector, trained_matracies[nhidden+1],bias)
     #print(input_vector)
     output_vector = threshold_fire(input_vector, threshold_to_fire)
-    #print(output_vector)
+    print("ACTUAL OUTPUT", output_vector)
     #print()
 
     #print(training_output[0])
@@ -95,10 +100,12 @@ def feed_forward_neural_network(size_of_input, size_of_output, training_input,tr
             input_index+=1
         index += 1
     error = get_error(training_output, output_vector)
-    print("ERROR ", data_index, error)
+    
+    print("ERROR ", error)
     if(error < tadj):
         print("Network is done, error is low")
         #exit()
+    print()
     return trained_matracies
             
 def get_error(target, output):
@@ -115,24 +122,28 @@ def get_error(target, output):
 # Main function
 def main():
 
-    size_of_input =  int(input("size of your input vector: "))
-    size_of_output = int(input("size of your output vector: "))
-    threshold_to_fire = int(input("what is your threshold to fire: "))
-    phidden = int(input("Give number of perceptrons in each hidden layer: "))
-    nhidden = int(input("Give the number of hidden layers: "))
-    bias = float(input("Give the perceptron bias: "))
-    maxcycle = int(input("Give cycles to be repeated: "))
-    tadj = int(input("Give the threshold for neural network adjustment: "))
-    learning_rate = float(input("Give the learning rate: "))
-    # size_of_input = 4 # int(input("size of your input vector: "))
-    # size_of_output = 3#int(input("size of your output vector: "))
-    # threshold_to_fire = -1#int(input("what is your threshold to fire: "))
-    # phidden = 3#int(input("Give number of perceptrons in each hidden layer: "))
-    # nhidden = 3#int(input("Give the number of hidden layers: "))
-    # bias = 0#float(input("Give the perceptron bias: "))
-    # maxcycle = 0#int(input("Give cycles to be repeated: "))
-    # tadj = 3#int(input("Give the threshold for neural network adjustment: "))
-    # learning_rate = .01#float(input("Give the learning rate: "))
+    # size_of_input =  int(input("size of your input vector: "))
+    # size_of_output = int(input("size of your output vector: "))
+    # threshold_to_fire = float(input("what is your threshold to fire: "))
+    # phidden = int(input("Give number of perceptrons in each hidden layer: "))
+    # nhidden = int(input("Give the number of hidden layers: "))
+    # bias = float(input("Give the perceptron bias: "))
+    # maxcycle = int(input("Give cycles to be repeated: "))
+    # tadj = float(input("Give the threshold for neural network adjustment: "))
+    # learning_rate = float(input("Give the learning rate: "))
+    ############################################################
+    size_of_input = 4 # int(input("size of your input vector: "))
+    size_of_output = 3#int(input("size of your output vector: "))
+    threshold_to_fire = -1#int(input("what is your threshold to fire: "))
+    phidden = 3#int(input("Give number of perceptrons in each hidden layer: "))
+    nhidden = 3#int(input("Give the number of hidden layers: "))
+    bias = 0#float(input("Give the perceptron bias: "))
+    maxcycle = 0#int(input("Give cycles to be repeated: "))
+    tadj = 3#int(input("Give the threshold for neural network adjustment: "))
+    learning_rate = .01#float(input("Give the learning rate: "))
+
+    #input vector and out put vector shown
+    #take from real example
     training_pairs = generate_data(size_of_input,size_of_output)
     training_input  = [i[0] for i in training_pairs]
     training_output = [i[1] for i in training_pairs]
