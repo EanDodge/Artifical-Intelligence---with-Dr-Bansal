@@ -4,7 +4,7 @@ import numpy as np
 
 DATA_SIZE = 100
 def generate_data(size_of_input, size_of_output):
-    
+    #3x+2x-x = y
     training_pairs = list()
     for index in range(DATA_SIZE):
         training_input = list()
@@ -18,6 +18,23 @@ def generate_data(size_of_input, size_of_output):
         training_pairs.append((training_input,training_output))
     return training_pairs
 
+def generate_data_structured():
+    #3x+2x-x = y + z
+    training_pairs = list()
+    for index in range(DATA_SIZE):
+        training_input = list()
+        training_output = list()
+        for i in range(3):
+            rand1 = random.randint(0,10)
+            training_input.append(rand1)
+        output = 3*(training_input[0])+ 2*(training_input[1])-(training_input[2])
+        output_25 = output/4
+        output = output_25 * 3
+
+        training_output.append(output)
+        training_output.append(output_25)
+        training_pairs.append((training_input,training_output))
+    return training_pairs
 def threshold_fire(input_vector, threshold_to_fire):
     output_vector = list()
     for i in input_vector:
@@ -132,8 +149,8 @@ def main():
     # tadj = float(input("Give the threshold for neural network adjustment: "))
     # learning_rate = float(input("Give the learning rate: "))
     ############################################################
-    size_of_input = 4 # int(input("size of your input vector: "))
-    size_of_output = 3#int(input("size of your output vector: "))
+    size_of_input = 3 # int(input("size of your input vector: "))
+    size_of_output = 2#int(input("size of your output vector: "))
     threshold_to_fire = -1#int(input("what is your threshold to fire: "))
     phidden = 3#int(input("Give number of perceptrons in each hidden layer: "))
     nhidden = 3#int(input("Give the number of hidden layers: "))
@@ -144,7 +161,8 @@ def main():
 
     #input vector and out put vector shown
     #take from real example
-    training_pairs = generate_data(size_of_input,size_of_output)
+    #training_pairs = generate_data(size_of_input,size_of_output)
+    training_pairs = generate_data_structured()
     training_input  = [i[0] for i in training_pairs]
     training_output = [i[1] for i in training_pairs]
     trained_matracies = make_random_matrix(size_of_input,nhidden,phidden,size_of_output)
